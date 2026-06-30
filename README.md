@@ -49,7 +49,7 @@ MediFlow is an operational platform that helps front desk staff and hospital adm
 
 ## What this system does
 
-When a patient arrives, front desk staff register them with their basic details and a free-text description of their symptoms. The **severity agent** sends that description to a large language model, which classifies it into an operational urgency tier (`Low`, `Medium`, `High`, `Critical`) and a 1–10 priority score — strictly for queue ordering, with no diagnosis or medication advice. The **queue agent** then inserts the patient into the relevant doctor's queue and re-sorts every patient in that queue by priority score (and check-in time as a tiebreaker), so the most urgent cases always surface to the front.
+When a patient contacts, front desk staff register them with their basic details and a free-text description of their symptoms. The **severity agent** sends that description to a large language model, which classifies it into an operational urgency tier (`Low`, `Medium`, `High`, `Critical`) and a 1–10 priority score — strictly for queue ordering, with no diagnosis or medication advice. The **queue agent** then inserts the patient into the relevant doctor's queue and re-sorts every patient in that queue by priority score (and check-in time as a tiebreaker), so the most urgent cases always surface to the front.
 
 Separately, the **scheduling agent** helps book appointments: given a patient's preferred department, date, and time, it checks doctor availability, picks the best-matching physician, and confirms or rejects the booking based on real slot conflicts.
 
