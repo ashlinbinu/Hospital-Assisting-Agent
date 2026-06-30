@@ -3,7 +3,7 @@ import {
   fetchDepartments,
   fetchDoctorsByDepartment,
   fetchDoctorSchedule
-} from '../api/doctorApi';
+} from '../api/client';
 
 export default function Doctors() {
   const [departments, setDepartments] = useState([]);
@@ -12,6 +12,7 @@ export default function Doctors() {
   const [selectedDoctorId, setSelectedDoctorId] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadDepartments() {
@@ -23,6 +24,8 @@ export default function Doctors() {
         }
       } catch (err) {
         setError(err.message);
+      } finally {
+        setLoading(false);
       }
     }
     loadDepartments();
@@ -47,7 +50,6 @@ export default function Doctors() {
       setSchedule(null);
       return;
     }
-
     async function loadSchedule() {
       try {
         const data = await fetchDoctorSchedule(selectedDoctorId);
@@ -60,93 +62,100 @@ export default function Doctors() {
   }, [selectedDoctorId]);
 
   return (
-    <div style={{ padding: '24px', maxWidth: '980px', margin: '0 auto' }}>
-      <h1>Doctor Schedules</h1>
-      {error && (
-        <div style={{ marginBottom: '16px', color: 'crimson' }}>
-          {error}
-        </div>
-      )}
-
-      <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: '1fr 1fr' }}>
+    <div className="page">
+      <div className="page-header">
         <div>
-          <label htmlFor="department-select">Department</label>
-          <select
-            id="department-select"
-            value={selectedDepartment}
-            onChange={(event) => setSelectedDepartment(event.target.value)}
-            style={{ width: '100%', padding: '8px', marginTop: '8px' }}
-          >
-            {departments.map((department) => (
-              <option key={department} value={department}>
-                {department}
-              </option>
-            ))}
-          </select>
+          <div className="page-eyebrow">Staffing</div>
+          <h1 className="page-title">Doctor Schedules</h1>
+          <p className="page-subtitle">Browse availability and scheduled appointments by department and physician.</p>
         </div>
+      </div>
 
-        <div>
-          <label htmlFor="doctor-select">Doctor</label>
-          <select
-            id="doctor-select"
-            value={selectedDoctorId || ''}
-            onChange={(event) => setSelectedDoctorId(Number(event.target.value))}
-            style={{ width: '100%', padding: '8px', marginTop: '8px' }}
-          >
-            {doctors.length === 0 && <option value="">No doctors available</option>}
-            {doctors.map((doctor) => (
-              <option key={doctor.id} value={doctor.id}>
-                {doctor.name}
-              </option>
-            ))}
-          </select>
+      {error && <div className="banner banner-error">{error}</div>}
+
+      <div className="card card-pad" style={{ marginBottom: 22 }}>
+        <div className="grid-2">
+          <div className="field">
+            <label htmlFor="department-select">Department</label>
+            <select
+              id="department-select"
+              value={selectedDepartment}
+              onChange={(event) => setSelectedDepartment(event.target.value)}
+            >
+              {loading && <option>Loading…</option>}
+              {departments.map((department) => (
+                <option key={department} value={department}>{department}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="field">
+            <label htmlFor="doctor-select">Doctor</label>
+            <select
+              id="doctor-select"
+              value={selectedDoctorId || ''}
+              onChange={(event) => setSelectedDoctorId(Number(event.target.value))}
+            >
+              {doctors.length === 0 && <option value="">No doctors available</option>}
+              {doctors.map((doctor) => (
+                <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
       {schedule && (
-        <section style={{ marginTop: '24px' }}>
-          <div style={{ marginBottom: '16px' }}>
-            <strong>{schedule.doctor.name}</strong> — {schedule.doctor.department}
-            <div>
-              Hours: {schedule.doctor.availability_start} - {schedule.doctor.availability_end}
+        <div className="card">
+          <div className="card-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', justifyContent: 'space-between' }}>
+              <h2 style={{ fontSize: 15 }}>{schedule.doctor.name}</h2>
+              <span className="badge badge-neutral">{schedule.doctor.department}</span>
             </div>
-            <div>Consultation Duration: {schedule.doctor.consultation_duration} minutes</div>
+            <div style={{ display: 'flex', gap: 20, fontSize: 12.5, color: 'var(--color-ink-muted)' }}>
+              <span>Hours: <strong style={{ color: 'var(--color-ink)' }}>{schedule.doctor.availability_start}–{schedule.doctor.availability_end}</strong></span>
+              <span>Consult length: <strong style={{ color: 'var(--color-ink)' }}>{schedule.doctor.consultation_duration} min</strong></span>
+              <span>
+                Status:{' '}
+                <strong style={{ color: schedule.doctor.is_active ? 'var(--color-primary)' : 'var(--color-critical)' }}>
+                  {schedule.doctor.is_active ? 'Active' : 'Inactive'}
+                </strong>
+              </span>
+            </div>
           </div>
 
-          <h2>Scheduled Appointments</h2>
           {schedule.appointments.length === 0 ? (
-            <div>No appointments are currently scheduled for this doctor.</div>
+            <div className="empty-state">
+              <div className="empty-state-title">No appointments scheduled</div>
+              <div className="empty-state-sub">This doctor currently has an open calendar.</div>
+            </div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <table className="data-table">
               <thead>
                 <tr>
-                  <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '8px' }}>Patient</th>
-                  <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '8px' }}>Date</th>
-                  <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '8px' }}>Time</th>
-                  <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '8px' }}>Status</th>
+                  <th>Patient</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {schedule.appointments.map((appointment) => (
                   <tr key={appointment.appointment_id}>
-                    <td style={{ borderBottom: '1px solid #eee', padding: '8px' }}>
-                      {appointment.patient_name} (#{appointment.patient_id})
-                    </td>
-                    <td style={{ borderBottom: '1px solid #eee', padding: '8px' }}>
-                      {appointment.appointment_date}
-                    </td>
-                    <td style={{ borderBottom: '1px solid #eee', padding: '8px' }}>
-                      {appointment.appointment_time}
-                    </td>
-                    <td style={{ borderBottom: '1px solid #eee', padding: '8px' }}>
-                      {appointment.status}
+                    <td>{appointment.patient_name} <span className="mono" style={{ color: 'var(--color-ink-faint)', fontSize: 11.5 }}>#{appointment.patient_id}</span></td>
+                    <td>{appointment.appointment_date}</td>
+                    <td className="mono">{appointment.appointment_time}</td>
+                    <td>
+                      <span className={`badge ${appointment.status === 'Scheduled' ? 'badge-medium' : appointment.status === 'Cancelled' ? 'badge-critical' : 'badge-neutral'}`}>
+                        {appointment.status}
+                      </span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
-        </section>
+        </div>
       )}
     </div>
   );
