@@ -23,6 +23,30 @@ MediFlow is an operational platform that helps front desk staff and hospital adm
 
 ---
 
+## UI Overview
+<img width="959" height="412" alt="image" src="https://github.com/user-attachments/assets/10b46399-b906-44b9-8e42-5850deb9b12d" />
+<img width="959" height="413" alt="image" src="https://github.com/user-attachments/assets/22145536-00a0-4584-a6f2-06f2271c8971" />
+<img width="958" height="410" alt="image" src="https://github.com/user-attachments/assets/03eeaa09-007a-41c1-9182-3a906cb8026e" />
+<img width="956" height="413" alt="image" src="https://github.com/user-attachments/assets/75553e31-6535-4ffb-af26-d36b841a710c" />
+<img width="958" height="412" alt="image" src="https://github.com/user-attachments/assets/aa5e7684-bea5-43d2-a907-bacb31666b02" />
+<img width="959" height="414" alt="image" src="https://github.com/user-attachments/assets/8d2c9f04-3458-46c4-8524-cc322265721a" />
+<img width="959" height="412" alt="image" src="https://github.com/user-attachments/assets/b635ee38-7d27-4888-bf6f-8093422c354f" />
+<img width="959" height="413" alt="image" src="https://github.com/user-attachments/assets/1d0abaf5-d2c0-4944-a7fe-b82c2e741710" />
+<img width="959" height="413" alt="image" src="https://github.com/user-attachments/assets/f03b85d3-bdbb-4a5e-ad12-5b529fe3bd15" />
+<img width="959" height="412" alt="image" src="https://github.com/user-attachments/assets/bc31f689-9fee-4f66-bc48-4f6d19e9ab77" />
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## What this system does
 
 When a patient arrives, front desk staff register them with their basic details and a free-text description of their symptoms. The **severity agent** sends that description to a large language model, which classifies it into an operational urgency tier (`Low`, `Medium`, `High`, `Critical`) and a 1–10 priority score — strictly for queue ordering, with no diagnosis or medication advice. The **queue agent** then inserts the patient into the relevant doctor's queue and re-sorts every patient in that queue by priority score (and check-in time as a tiebreaker), so the most urgent cases always surface to the front.
